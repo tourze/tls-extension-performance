@@ -88,7 +88,7 @@ class CompressedCertificateExtension extends AbstractExtension
             throw new InvalidArgumentException('No supported compression algorithms found in extension data');
         }
 
-        return new static($algorithms);
+        return new self($algorithms);
     }
     
     /**
