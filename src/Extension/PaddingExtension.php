@@ -59,7 +59,7 @@ class PaddingExtension extends AbstractExtension
             }
         }
 
-        return new self($length);
+        return new static($length);
     }
     
     /**
@@ -89,7 +89,7 @@ class PaddingExtension extends AbstractExtension
             $paddingNeeded = 0;
         }
 
-        return new self($paddingNeeded);
+        return new static($paddingNeeded);
     }
     
     /**

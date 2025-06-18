@@ -67,7 +67,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
         }
 
         $length = ord($data[0]);
-        return new self($length);
+        return new static($length);
     }
     
     /**
@@ -119,6 +119,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
             self::LENGTH_1024 => 1024,
             self::LENGTH_2048 => 2048,
             self::LENGTH_4096 => 4096,
+            default => throw new \LogicException('Invalid fragment length: ' . $this->length),
         };
     }
     
