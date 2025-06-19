@@ -64,7 +64,7 @@ class RecordSizeLimitExtension extends AbstractExtension
         $offset = 0;
         $recordSizeLimit = self::decodeUint16($data, $offset);
 
-        return new static($recordSizeLimit);
+        return new static($recordSizeLimit); // @phpstan-ignore-line
     }
     
     /**

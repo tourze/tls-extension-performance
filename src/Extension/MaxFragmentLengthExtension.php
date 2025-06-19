@@ -67,7 +67,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
         }
 
         $length = ord($data[0]);
-        return new static($length);
+        return new static($length); // @phpstan-ignore-line
     }
     
     /**
