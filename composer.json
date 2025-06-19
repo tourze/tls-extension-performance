@@ -5,6 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.1",
+    "tourze/enum-extra": "0.1.*",
     "tourze/tls-common": "0.0.*",
     "tourze/tls-extension-naming": "0.0.*",
     "tourze/tls-handshake-messages": "0.0.*"
@@ -23,4 +24,4 @@
       "Tourze\\TLSExtensionPerformance\\Tests\\": "tests/"
     }
   }
-} 
+}

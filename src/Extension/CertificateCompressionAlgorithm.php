@@ -4,13 +4,21 @@ declare(strict_types=1);
 
 namespace Tourze\TLSExtensionPerformance\Extension;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * 证书压缩算法枚举
  * 
  * @see https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml#certificate-compression-algorithm-ids
  */
-enum CertificateCompressionAlgorithm: int
+enum CertificateCompressionAlgorithm: int implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     /**
      * Zlib 压缩算法
      */
@@ -37,6 +45,20 @@ enum CertificateCompressionAlgorithm: int
             self::ZLIB => 'zlib',
             self::BROTLI => 'brotli',
             self::ZSTD => 'zstd',
+        };
+    }
+
+    /**
+     * 获取标签
+     * 
+     * @return string 标签
+     */
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::ZLIB => 'Zlib 压缩',
+            self::BROTLI => 'Brotli 压缩',
+            self::ZSTD => 'Zstandard 压缩',
         };
     }
     
