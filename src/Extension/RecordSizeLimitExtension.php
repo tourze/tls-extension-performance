@@ -40,7 +40,7 @@ class RecordSizeLimitExtension extends AbstractExtension
     
     /**
      * 构造函数
-     * 
+     *
      * @param int $recordSizeLimit 记录大小限制（字节）
      */
     public function __construct(int $recordSizeLimit = self::MAX_RECORD_SIZE)
@@ -79,7 +79,7 @@ class RecordSizeLimitExtension extends AbstractExtension
     
     /**
      * 获取记录大小限制
-     * 
+     *
      * @return int 记录大小限制（字节）
      */
     public function getRecordSizeLimit(): int
@@ -128,7 +128,7 @@ class RecordSizeLimitExtension extends AbstractExtension
     
     /**
      * 检查扩展是否适用于指定的TLS版本
-     * 
+     *
      * @param string $tlsVersion TLS版本
      * @return bool 是否适用
      */

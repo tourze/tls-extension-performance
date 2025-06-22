@@ -45,7 +45,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
     
     /**
      * 构造函数
-     * 
+     *
      * @param int $length 最大片段长度值
      */
     public function __construct(int $length = self::LENGTH_4096)
@@ -82,7 +82,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
     
     /**
      * 获取最大片段长度
-     * 
+     *
      * @return int 最大片段长度值
      */
     public function getLength(): int

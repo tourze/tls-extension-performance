@@ -25,14 +25,14 @@ class CompressedCertificateExtension extends AbstractExtension
     
     /**
      * 支持的压缩算法列表
-     * 
+     *
      * @var CertificateCompressionAlgorithm[]
      */
     private array $algorithms = [];
     
     /**
      * 构造函数
-     * 
+     *
      * @param CertificateCompressionAlgorithm[] $algorithms 支持的压缩算法列表
      */
     public function __construct(array $algorithms = [])
@@ -103,7 +103,7 @@ class CompressedCertificateExtension extends AbstractExtension
     
     /**
      * 获取支持的压缩算法
-     * 
+     *
      * @return CertificateCompressionAlgorithm[] 算法列表
      */
     public function getAlgorithms(): array
@@ -178,7 +178,7 @@ class CompressedCertificateExtension extends AbstractExtension
     
     /**
      * 检查扩展是否适用于指定的TLS版本
-     * 
+     *
      * @param string $tlsVersion TLS版本
      * @return bool 是否适用
      */

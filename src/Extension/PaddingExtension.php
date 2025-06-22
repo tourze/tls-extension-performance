@@ -30,7 +30,7 @@ class PaddingExtension extends AbstractExtension
     
     /**
      * 构造函数
-     * 
+     *
      * @param int $paddingLength 填充长度（字节）
      */
     public function __construct(int $paddingLength = 0)
@@ -150,7 +150,7 @@ class PaddingExtension extends AbstractExtension
     
     /**
      * 检查扩展是否适用于指定的TLS版本
-     * 
+     *
      * @param string $tlsVersion TLS版本
      * @return bool 是否适用
      */
