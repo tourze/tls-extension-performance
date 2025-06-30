@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\TLSExtensionPerformance\Extension;
 
-use InvalidArgumentException;
 use Tourze\TLSExtensionNaming\Extension\AbstractExtension;
 use Tourze\TLSExtensionNaming\Extension\ExtensionType;
+use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
+use Tourze\TLSExtensionPerformance\Exception\InvalidPaddingException;
 
 /**
  * 填充扩展实现
- * 
+ *
  * 允许客户端向ClientHello消息添加填充以防止指纹识别
  * 填充数据应该是全零字节
- * 
+ *
  * @see https://datatracker.ietf.org/doc/html/rfc7685
  */
 class PaddingExtension extends AbstractExtension
@@ -43,7 +44,7 @@ class PaddingExtension extends AbstractExtension
      *
      * @param string $data 二进制数据
      * @return static 解码后的扩展对象
-     * @throws InvalidArgumentException 如果数据格式错误
+     * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
     {
@@ -52,7 +53,7 @@ class PaddingExtension extends AbstractExtension
         // 验证所有字节都是零
         for ($i = 0; $i < $length; $i++) {
             if ($data[$i] !== "\x00") {
-                throw new InvalidArgumentException(sprintf(
+                throw new InvalidExtensionDataException(sprintf(
                     'Padding extension data must contain only zero bytes, found non-zero byte at position %d',
                     $i
                 ));
@@ -68,12 +69,12 @@ class PaddingExtension extends AbstractExtension
      * @param int $currentSize 当前消息大小
      * @param int $targetSize 目标消息大小
      * @return static 填充扩展
-     * @throws InvalidArgumentException 如果目标大小小于当前大小
+     * @throws InvalidPaddingException 如果目标大小小于当前大小
      */
     public static function createForTargetSize(int $currentSize, int $targetSize): static
     {
         if ($targetSize < $currentSize) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidPaddingException(sprintf(
                 'Target size (%d) must be greater than or equal to current size (%d)',
                 $targetSize,
                 $currentSize
@@ -117,16 +118,16 @@ class PaddingExtension extends AbstractExtension
      *
      * @param int $paddingLength 填充长度（字节）
      * @return self
-     * @throws InvalidArgumentException 如果填充长度无效
+     * @throws InvalidPaddingException 如果填充长度无效
      */
     public function setPaddingLength(int $paddingLength): self
     {
         if ($paddingLength < 0) {
-            throw new InvalidArgumentException('Padding length cannot be negative');
+            throw new InvalidPaddingException('Padding length cannot be negative');
         }
 
         if ($paddingLength > self::MAX_PADDING_LENGTH) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidPaddingException(sprintf(
                 'Padding length cannot exceed %d bytes, %d given',
                 self::MAX_PADDING_LENGTH,
                 $paddingLength

@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Tourze\TLSExtensionPerformance\Extension;
 
-use InvalidArgumentException;
 use Tourze\TLSExtensionNaming\Extension\AbstractExtension;
+use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
+use Tourze\TLSExtensionPerformance\Exception\InvalidAlgorithmException;
 
 /**
  * 压缩证书扩展实现
- * 
+ *
  * 允许使用压缩算法来减少证书的传输大小
  * 这可以显著减少握手延迟，特别是在低带宽环境中
- * 
+ *
  * @see https://datatracker.ietf.org/doc/html/rfc8879
  */
 class CompressedCertificateExtension extends AbstractExtension
@@ -54,7 +55,7 @@ class CompressedCertificateExtension extends AbstractExtension
      *
      * @param string $data 二进制数据
      * @return static 解码后的扩展对象
-     * @throws InvalidArgumentException 如果数据格式错误
+     * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
     {
@@ -62,13 +63,13 @@ class CompressedCertificateExtension extends AbstractExtension
         $length = strlen($data);
 
         if ($length < 1) {
-            throw new InvalidArgumentException('Compressed certificate extension data is too short');
+            throw new InvalidExtensionDataException('Compressed certificate extension data is too short');
         }
 
         $algorithmCount = ord($data[$offset++]);
 
         if ($length < 1 + $algorithmCount * 2) {
-            throw new InvalidArgumentException('Compressed certificate extension data is too short for the specified algorithm count');
+            throw new InvalidExtensionDataException('Compressed certificate extension data is too short for the specified algorithm count');
         }
 
         $algorithms = [];
@@ -85,7 +86,7 @@ class CompressedCertificateExtension extends AbstractExtension
         }
 
         if (empty($algorithms)) {
-            throw new InvalidArgumentException('No supported compression algorithms found in extension data');
+            throw new InvalidExtensionDataException('No supported compression algorithms found in extension data');
         }
 
         return new static($algorithms); // @phpstan-ignore-line
@@ -116,17 +117,17 @@ class CompressedCertificateExtension extends AbstractExtension
      *
      * @param CertificateCompressionAlgorithm[] $algorithms 算法列表
      * @return self
-     * @throws InvalidArgumentException 如果算法列表为空
+     * @throws InvalidAlgorithmException 如果算法列表为空
      */
     public function setAlgorithms(array $algorithms): self
     {
         if (empty($algorithms)) {
-            throw new InvalidArgumentException('At least one compression algorithm must be specified');
+            throw new InvalidAlgorithmException('At least one compression algorithm must be specified');
         }
 
         foreach ($algorithms as $algorithm) {
             if (!$algorithm instanceof CertificateCompressionAlgorithm) {
-                throw new InvalidArgumentException('All algorithms must be instances of CertificateCompressionAlgorithm');
+                throw new InvalidAlgorithmException('All algorithms must be instances of CertificateCompressionAlgorithm');
             }
         }
 

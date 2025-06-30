@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Tourze\TLSExtensionPerformance\Extension;
 
-use InvalidArgumentException;
 use Tourze\TLSExtensionNaming\Extension\AbstractExtension;
+use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
+use Tourze\TLSExtensionPerformance\Exception\InvalidRecordSizeLimitException;
 
 /**
  * 记录大小限制扩展实现
- * 
+ *
  * 允许端点限制其发送的记录的大小
  * 这对于内存或带宽受限的设备特别有用
- * 
+ *
  * @see https://datatracker.ietf.org/doc/html/rfc8449
  */
 class RecordSizeLimitExtension extends AbstractExtension
@@ -53,12 +54,12 @@ class RecordSizeLimitExtension extends AbstractExtension
      *
      * @param string $data 二进制数据
      * @return static 解码后的扩展对象
-     * @throws InvalidArgumentException 如果数据格式错误
+     * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
     {
         if (strlen($data) !== 2) {
-            throw new InvalidArgumentException('Record size limit extension data must be exactly 2 bytes');
+            throw new InvalidExtensionDataException('Record size limit extension data must be exactly 2 bytes');
         }
 
         $offset = 0;
@@ -92,12 +93,12 @@ class RecordSizeLimitExtension extends AbstractExtension
      *
      * @param int $recordSizeLimit 记录大小限制（字节）
      * @return self
-     * @throws InvalidArgumentException 如果大小限制无效
+     * @throws InvalidRecordSizeLimitException 如果大小限制无效
      */
     public function setRecordSizeLimit(int $recordSizeLimit): self
     {
         if ($recordSizeLimit < self::MIN_RECORD_SIZE) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidRecordSizeLimitException(sprintf(
                 'Record size limit must be at least %d bytes, %d given',
                 self::MIN_RECORD_SIZE,
                 $recordSizeLimit
@@ -105,7 +106,7 @@ class RecordSizeLimitExtension extends AbstractExtension
         }
 
         if ($recordSizeLimit > self::MAX_RECORD_SIZE) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidRecordSizeLimitException(sprintf(
                 'Record size limit must not exceed %d bytes, %d given',
                 self::MAX_RECORD_SIZE,
                 $recordSizeLimit

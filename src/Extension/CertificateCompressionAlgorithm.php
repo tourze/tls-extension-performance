@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * 证书压缩算法枚举
- * 
+ *
  * @see https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml#certificate-compression-algorithm-ids
  */
 enum CertificateCompressionAlgorithm: int implements Itemable, Labelable, Selectable

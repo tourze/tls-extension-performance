@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tourze\TLSExtensionPerformance\Extension;
 
-use InvalidArgumentException;
 use Tourze\TLSExtensionNaming\Extension\AbstractExtension;
 use Tourze\TLSExtensionNaming\Extension\ExtensionType;
+use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
+use Tourze\TLSExtensionPerformance\Exception\InvalidFragmentLengthException;
+use Tourze\TLSExtensionPerformance\Exception\ExtensionLogicException;
 
 /**
  * 最大分片长度扩展实现
- * 
+ *
  * 允许客户端和服务器协商较小的最大记录片段大小
  * 这可以减少内存使用并提高性能，特别是对于内存受限的设备
- * 
+ *
  * @see https://datatracker.ietf.org/doc/html/rfc6066#section-4
  */
 class MaxFragmentLengthExtension extends AbstractExtension
@@ -58,12 +60,12 @@ class MaxFragmentLengthExtension extends AbstractExtension
      *
      * @param string $data 二进制数据
      * @return static 解码后的扩展对象
-     * @throws InvalidArgumentException 如果数据格式错误
+     * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
     {
         if (strlen($data) !== 1) {
-            throw new InvalidArgumentException('Max fragment length extension data must be exactly 1 byte');
+            throw new InvalidExtensionDataException('Max fragment length extension data must be exactly 1 byte');
         }
 
         $length = ord($data[0]);
@@ -95,12 +97,12 @@ class MaxFragmentLengthExtension extends AbstractExtension
      *
      * @param int $length 最大片段长度值
      * @return self
-     * @throws InvalidArgumentException 如果长度值无效
+     * @throws InvalidFragmentLengthException 如果长度值无效
      */
     public function setLength(int $length): self
     {
         if (!in_array($length, [self::LENGTH_512, self::LENGTH_1024, self::LENGTH_2048, self::LENGTH_4096], true)) {
-            throw new InvalidArgumentException(sprintf('Invalid max fragment length value: %d', $length));
+            throw new InvalidFragmentLengthException(sprintf('Invalid max fragment length value: %d', $length));
         }
 
         $this->length = $length;
@@ -119,7 +121,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
             self::LENGTH_1024 => 1024,
             self::LENGTH_2048 => 2048,
             self::LENGTH_4096 => 4096,
-            default => throw new \LogicException('Invalid fragment length: ' . $this->length),
+            default => throw new ExtensionLogicException('Invalid fragment length: ' . $this->length),
         };
     }
     
