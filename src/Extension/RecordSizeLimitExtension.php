@@ -23,22 +23,22 @@ class RecordSizeLimitExtension extends AbstractExtension
      * 注意：这是基于 RFC 8449 的值
      */
     private const EXTENSION_TYPE = 28;
-    
+
     /**
      * 最小允许的记录大小（64字节）
      */
     public const MIN_RECORD_SIZE = 64;
-    
+
     /**
      * 最大允许的记录大小（16384字节）
      */
     public const MAX_RECORD_SIZE = 16384;
-    
+
     /**
      * 记录大小限制（字节）
      */
     private int $recordSizeLimit;
-    
+
     /**
      * 构造函数
      *
@@ -48,26 +48,28 @@ class RecordSizeLimitExtension extends AbstractExtension
     {
         $this->setRecordSizeLimit($recordSizeLimit);
     }
-    
+
     /**
      * 从二进制数据解码扩展
      *
      * @param string $data 二进制数据
+     *
      * @return static 解码后的扩展对象
+     *
      * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
     {
-        if (strlen($data) !== 2) {
+        if (2 !== strlen($data)) {
             throw new InvalidExtensionDataException('Record size limit extension data must be exactly 2 bytes');
         }
 
         $offset = 0;
-        $recordSizeLimit = self::decodeUint16($data, $offset);
+        [$recordSizeLimit, $offset] = self::decodeUint16($data, $offset);
 
         return new static($recordSizeLimit); // @phpstan-ignore-line
     }
-    
+
     /**
      * 获取扩展类型
      *
@@ -77,7 +79,7 @@ class RecordSizeLimitExtension extends AbstractExtension
     {
         return self::EXTENSION_TYPE;
     }
-    
+
     /**
      * 获取记录大小限制
      *
@@ -87,36 +89,27 @@ class RecordSizeLimitExtension extends AbstractExtension
     {
         return $this->recordSizeLimit;
     }
-    
+
     /**
      * 设置记录大小限制
      *
      * @param int $recordSizeLimit 记录大小限制（字节）
-     * @return self
+     *
      * @throws InvalidRecordSizeLimitException 如果大小限制无效
      */
-    public function setRecordSizeLimit(int $recordSizeLimit): self
+    public function setRecordSizeLimit(int $recordSizeLimit): void
     {
         if ($recordSizeLimit < self::MIN_RECORD_SIZE) {
-            throw new InvalidRecordSizeLimitException(sprintf(
-                'Record size limit must be at least %d bytes, %d given',
-                self::MIN_RECORD_SIZE,
-                $recordSizeLimit
-            ));
+            throw new InvalidRecordSizeLimitException(sprintf('Record size limit must be at least %d bytes, %d given', self::MIN_RECORD_SIZE, $recordSizeLimit));
         }
 
         if ($recordSizeLimit > self::MAX_RECORD_SIZE) {
-            throw new InvalidRecordSizeLimitException(sprintf(
-                'Record size limit must not exceed %d bytes, %d given',
-                self::MAX_RECORD_SIZE,
-                $recordSizeLimit
-            ));
+            throw new InvalidRecordSizeLimitException(sprintf('Record size limit must not exceed %d bytes, %d given', self::MAX_RECORD_SIZE, $recordSizeLimit));
         }
 
         $this->recordSizeLimit = $recordSizeLimit;
-        return $this;
     }
-    
+
     /**
      * 将扩展编码为二进制数据
      *
@@ -126,11 +119,12 @@ class RecordSizeLimitExtension extends AbstractExtension
     {
         return $this->encodeUint16($this->recordSizeLimit);
     }
-    
+
     /**
      * 检查扩展是否适用于指定的TLS版本
      *
      * @param string $tlsVersion TLS版本
+     *
      * @return bool 是否适用
      */
     public function isApplicableForVersion(string $tlsVersion): bool

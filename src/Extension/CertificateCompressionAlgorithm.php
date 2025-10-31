@@ -23,17 +23,17 @@ enum CertificateCompressionAlgorithm: int implements Itemable, Labelable, Select
      * Zlib 压缩算法
      */
     case ZLIB = 1;
-    
+
     /**
      * Brotli 压缩算法
      */
     case BROTLI = 2;
-    
+
     /**
      * Zstandard 压缩算法
      */
     case ZSTD = 3;
-    
+
     /**
      * 获取算法名称
      *
@@ -61,7 +61,7 @@ enum CertificateCompressionAlgorithm: int implements Itemable, Labelable, Select
             self::ZSTD => 'Zstandard 压缩',
         };
     }
-    
+
     /**
      * 检查算法是否在系统中可用
      *

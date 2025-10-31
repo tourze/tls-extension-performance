@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tourze\TLSExtensionPerformance\Extension;
 
 use Tourze\TLSExtensionNaming\Extension\AbstractExtension;
-use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
 use Tourze\TLSExtensionPerformance\Exception\InvalidAlgorithmException;
+use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
 
 /**
  * 压缩证书扩展实现
@@ -23,14 +23,14 @@ class CompressedCertificateExtension extends AbstractExtension
      * 注意：这是基于 RFC 8879 的值
      */
     private const EXTENSION_TYPE = 27;
-    
+
     /**
      * 支持的压缩算法列表
      *
      * @var CertificateCompressionAlgorithm[]
      */
     private array $algorithms = [];
-    
+
     /**
      * 构造函数
      *
@@ -38,7 +38,7 @@ class CompressedCertificateExtension extends AbstractExtension
      */
     public function __construct(array $algorithms = [])
     {
-        if (empty($algorithms)) {
+        if ([] === $algorithms) {
             // 默认添加所有可用的算法
             foreach (CertificateCompressionAlgorithm::cases() as $algorithm) {
                 if ($algorithm->isAvailable()) {
@@ -46,15 +46,17 @@ class CompressedCertificateExtension extends AbstractExtension
                 }
             }
         }
-        
+
         $this->setAlgorithms($algorithms);
     }
-    
+
     /**
      * 从二进制数据解码扩展
      *
      * @param string $data 二进制数据
+     *
      * @return static 解码后的扩展对象
+     *
      * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
@@ -73,11 +75,11 @@ class CompressedCertificateExtension extends AbstractExtension
         }
 
         $algorithms = [];
-        for ($i = 0; $i < $algorithmCount; $i++) {
-            $algorithmId = self::decodeUint16($data, $offset);
+        for ($i = 0; $i < $algorithmCount; ++$i) {
+            [$algorithmId, $offset] = self::decodeUint16($data, $offset);
 
             $algorithm = CertificateCompressionAlgorithm::tryFrom($algorithmId);
-            if ($algorithm === null) {
+            if (null === $algorithm) {
                 // 跳过未知的算法
                 continue;
             }
@@ -85,13 +87,13 @@ class CompressedCertificateExtension extends AbstractExtension
             $algorithms[] = $algorithm;
         }
 
-        if (empty($algorithms)) {
+        if ([] === $algorithms) {
             throw new InvalidExtensionDataException('No supported compression algorithms found in extension data');
         }
 
         return new static($algorithms); // @phpstan-ignore-line
     }
-    
+
     /**
      * 获取扩展类型
      *
@@ -101,7 +103,7 @@ class CompressedCertificateExtension extends AbstractExtension
     {
         return self::EXTENSION_TYPE;
     }
-    
+
     /**
      * 获取支持的压缩算法
      *
@@ -111,17 +113,17 @@ class CompressedCertificateExtension extends AbstractExtension
     {
         return $this->algorithms;
     }
-    
+
     /**
      * 设置支持的压缩算法
      *
      * @param CertificateCompressionAlgorithm[] $algorithms 算法列表
-     * @return self
+     *
      * @throws InvalidAlgorithmException 如果算法列表为空
      */
-    public function setAlgorithms(array $algorithms): self
+    public function setAlgorithms(array $algorithms): void
     {
-        if (empty($algorithms)) {
+        if ([] === $algorithms) {
             throw new InvalidAlgorithmException('At least one compression algorithm must be specified');
         }
 
@@ -132,34 +134,32 @@ class CompressedCertificateExtension extends AbstractExtension
         }
 
         $this->algorithms = array_values($algorithms);
-        return $this;
     }
-    
+
     /**
      * 添加支持的压缩算法
      *
      * @param CertificateCompressionAlgorithm $algorithm 算法
-     * @return self
      */
-    public function addAlgorithm(CertificateCompressionAlgorithm $algorithm): self
+    public function addAlgorithm(CertificateCompressionAlgorithm $algorithm): void
     {
         if (!in_array($algorithm, $this->algorithms, true)) {
             $this->algorithms[] = $algorithm;
         }
-        return $this;
     }
-    
+
     /**
      * 检查是否支持指定的压缩算法
      *
      * @param CertificateCompressionAlgorithm $algorithm 算法
+     *
      * @return bool 是否支持
      */
     public function supportsAlgorithm(CertificateCompressionAlgorithm $algorithm): bool
     {
         return in_array($algorithm, $this->algorithms, true);
     }
-    
+
     /**
      * 将扩展编码为二进制数据
      *
@@ -176,11 +176,12 @@ class CompressedCertificateExtension extends AbstractExtension
 
         return $data;
     }
-    
+
     /**
      * 检查扩展是否适用于指定的TLS版本
      *
      * @param string $tlsVersion TLS版本
+     *
      * @return bool 是否适用
      */
     public function isApplicableForVersion(string $tlsVersion): bool

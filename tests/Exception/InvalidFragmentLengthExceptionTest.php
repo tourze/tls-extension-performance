@@ -2,30 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Tourze\TLSExtensionPerformance\Tests\Unit\Exception;
+namespace Tourze\TLSExtensionPerformance\Tests\Exception;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitBase\AbstractExceptionTestCase;
 use Tourze\TLSExtensionPerformance\Exception\InvalidFragmentLengthException;
-use InvalidArgumentException;
 
 /**
- * InvalidFragmentLengthException测试
+ * @internal
  */
-class InvalidFragmentLengthExceptionTest extends TestCase
+#[CoversClass(InvalidFragmentLengthException::class)]
+final class InvalidFragmentLengthExceptionTest extends AbstractExceptionTestCase
 {
     public function testIsInstanceOfInvalidArgumentException(): void
     {
         $exception = new InvalidFragmentLengthException('Test message');
-        
-        $this->assertInstanceOf(InvalidArgumentException::class, $exception);
+
+        $this->assertInstanceOf(\InvalidArgumentException::class, $exception);
         $this->assertSame('Test message', $exception->getMessage());
     }
-    
+
     public function testCanBeCreatedWithCodeAndPrevious(): void
     {
         $previous = new \Exception('Previous exception');
         $exception = new InvalidFragmentLengthException('Test message', 123, $previous);
-        
+
         $this->assertSame('Test message', $exception->getMessage());
         $this->assertSame(123, $exception->getCode());
         $this->assertSame($previous, $exception->getPrevious());

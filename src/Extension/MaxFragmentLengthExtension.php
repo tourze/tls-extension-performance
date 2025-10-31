@@ -6,9 +6,9 @@ namespace Tourze\TLSExtensionPerformance\Extension;
 
 use Tourze\TLSExtensionNaming\Extension\AbstractExtension;
 use Tourze\TLSExtensionNaming\Extension\ExtensionType;
+use Tourze\TLSExtensionPerformance\Exception\ExtensionLogicException;
 use Tourze\TLSExtensionPerformance\Exception\InvalidExtensionDataException;
 use Tourze\TLSExtensionPerformance\Exception\InvalidFragmentLengthException;
-use Tourze\TLSExtensionPerformance\Exception\ExtensionLogicException;
 
 /**
  * 最大分片长度扩展实现
@@ -24,27 +24,27 @@ class MaxFragmentLengthExtension extends AbstractExtension
      * 512字节
      */
     public const LENGTH_512 = 1;
-    
+
     /**
      * 1024字节
      */
     public const LENGTH_1024 = 2;
-    
+
     /**
      * 2048字节
      */
     public const LENGTH_2048 = 3;
-    
+
     /**
      * 4096字节
      */
     public const LENGTH_4096 = 4;
-    
+
     /**
      * 最大片段长度值
      */
     private int $length;
-    
+
     /**
      * 构造函数
      *
@@ -54,24 +54,27 @@ class MaxFragmentLengthExtension extends AbstractExtension
     {
         $this->setLength($length);
     }
-    
+
     /**
      * 从二进制数据解码扩展
      *
      * @param string $data 二进制数据
+     *
      * @return static 解码后的扩展对象
+     *
      * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
     {
-        if (strlen($data) !== 1) {
+        if (1 !== strlen($data)) {
             throw new InvalidExtensionDataException('Max fragment length extension data must be exactly 1 byte');
         }
 
         $length = ord($data[0]);
+
         return new static($length); // @phpstan-ignore-line
     }
-    
+
     /**
      * 获取扩展类型
      *
@@ -81,7 +84,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
     {
         return ExtensionType::MAX_FRAGMENT_LENGTH->value;
     }
-    
+
     /**
      * 获取最大片段长度
      *
@@ -91,24 +94,23 @@ class MaxFragmentLengthExtension extends AbstractExtension
     {
         return $this->length;
     }
-    
+
     /**
      * 设置最大片段长度
      *
      * @param int $length 最大片段长度值
-     * @return self
+     *
      * @throws InvalidFragmentLengthException 如果长度值无效
      */
-    public function setLength(int $length): self
+    public function setLength(int $length): void
     {
         if (!in_array($length, [self::LENGTH_512, self::LENGTH_1024, self::LENGTH_2048, self::LENGTH_4096], true)) {
             throw new InvalidFragmentLengthException(sprintf('Invalid max fragment length value: %d', $length));
         }
 
         $this->length = $length;
-        return $this;
     }
-    
+
     /**
      * 获取实际的字节数
      *
@@ -124,7 +126,7 @@ class MaxFragmentLengthExtension extends AbstractExtension
             default => throw new ExtensionLogicException('Invalid fragment length: ' . $this->length),
         };
     }
-    
+
     /**
      * 将扩展编码为二进制数据
      *

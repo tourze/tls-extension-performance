@@ -23,12 +23,12 @@ class PaddingExtension extends AbstractExtension
      * 最大填充长度（65535字节）
      */
     public const MAX_PADDING_LENGTH = 65535;
-    
+
     /**
      * 填充长度（字节）
      */
     private int $paddingLength;
-    
+
     /**
      * 构造函数
      *
@@ -38,12 +38,14 @@ class PaddingExtension extends AbstractExtension
     {
         $this->setPaddingLength($paddingLength);
     }
-    
+
     /**
      * 从二进制数据解码扩展
      *
      * @param string $data 二进制数据
+     *
      * @return static 解码后的扩展对象
+     *
      * @throws InvalidExtensionDataException 如果数据格式错误
      */
     public static function decode(string $data): static
@@ -51,34 +53,29 @@ class PaddingExtension extends AbstractExtension
         $length = strlen($data);
 
         // 验证所有字节都是零
-        for ($i = 0; $i < $length; $i++) {
-            if ($data[$i] !== "\x00") {
-                throw new InvalidExtensionDataException(sprintf(
-                    'Padding extension data must contain only zero bytes, found non-zero byte at position %d',
-                    $i
-                ));
+        for ($i = 0; $i < $length; ++$i) {
+            if ("\x00" !== $data[$i]) {
+                throw new InvalidExtensionDataException(sprintf('Padding extension data must contain only zero bytes, found non-zero byte at position %d', $i));
             }
         }
 
         return new static($length); // @phpstan-ignore-line
     }
-    
+
     /**
      * 创建一个填充扩展以使消息达到目标大小
      *
      * @param int $currentSize 当前消息大小
-     * @param int $targetSize 目标消息大小
+     * @param int $targetSize  目标消息大小
+     *
      * @return static 填充扩展
+     *
      * @throws InvalidPaddingException 如果目标大小小于当前大小
      */
     public static function createForTargetSize(int $currentSize, int $targetSize): static
     {
         if ($targetSize < $currentSize) {
-            throw new InvalidPaddingException(sprintf(
-                'Target size (%d) must be greater than or equal to current size (%d)',
-                $targetSize,
-                $currentSize
-            ));
+            throw new InvalidPaddingException(sprintf('Target size (%d) must be greater than or equal to current size (%d)', $targetSize, $currentSize));
         }
 
         // 计算需要的填充长度
@@ -92,7 +89,7 @@ class PaddingExtension extends AbstractExtension
 
         return new static($paddingNeeded); // @phpstan-ignore-line
     }
-    
+
     /**
      * 获取扩展类型
      *
@@ -102,7 +99,7 @@ class PaddingExtension extends AbstractExtension
     {
         return ExtensionType::PADDING->value;
     }
-    
+
     /**
      * 获取填充长度
      *
@@ -112,32 +109,27 @@ class PaddingExtension extends AbstractExtension
     {
         return $this->paddingLength;
     }
-    
+
     /**
      * 设置填充长度
      *
      * @param int $paddingLength 填充长度（字节）
-     * @return self
+     *
      * @throws InvalidPaddingException 如果填充长度无效
      */
-    public function setPaddingLength(int $paddingLength): self
+    public function setPaddingLength(int $paddingLength): void
     {
         if ($paddingLength < 0) {
             throw new InvalidPaddingException('Padding length cannot be negative');
         }
 
         if ($paddingLength > self::MAX_PADDING_LENGTH) {
-            throw new InvalidPaddingException(sprintf(
-                'Padding length cannot exceed %d bytes, %d given',
-                self::MAX_PADDING_LENGTH,
-                $paddingLength
-            ));
+            throw new InvalidPaddingException(sprintf('Padding length cannot exceed %d bytes, %d given', self::MAX_PADDING_LENGTH, $paddingLength));
         }
 
         $this->paddingLength = $paddingLength;
-        return $this;
     }
-    
+
     /**
      * 将扩展编码为二进制数据
      *
@@ -148,11 +140,12 @@ class PaddingExtension extends AbstractExtension
         // 填充扩展的内容是指定长度的零字节
         return str_repeat("\x00", $this->paddingLength);
     }
-    
+
     /**
      * 检查扩展是否适用于指定的TLS版本
      *
      * @param string $tlsVersion TLS版本
+     *
      * @return bool 是否适用
      */
     public function isApplicableForVersion(string $tlsVersion): bool
